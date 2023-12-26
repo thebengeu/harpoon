@@ -17,26 +17,34 @@ local function filter_empty_string(list)
     return next
 end
 
+local function add_index(list)
+    for idx = 1, #list do
+        list[idx].index = idx
+    end
+
+    return list
+end
+
+local displayer = entry_display.create({
+    separator = " ",
+    items = {
+        { width = 2 },
+        { remaining = true },
+    },
+})
+
 local generate_new_finder = function()
     return finders.new_table({
-        results = filter_empty_string(harpoon:list().items),
+        results = add_index(filter_empty_string(harpoon:list().items)),
         entry_maker = function(entry)
             local line = entry.value
                 .. ":"
                 .. entry.context.row
                 .. ":"
                 .. entry.context.col
-            local displayer = entry_display.create({
-                separator = " - ",
-                items = {
-                    { width = 2 },
-                    { width = 50 },
-                    { remaining = true },
-                },
-            })
             local make_display = function()
                 return displayer({
-                    tostring(entry.index),
+                    entry.index,
                     line,
                 })
             end
